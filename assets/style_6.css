@@ -1,0 +1,3 @@
+.hovered-element { outline: rgb(56, 113, 224) dashed 2px; }
+.clicked-element { outline: rgb(56, 113, 224) solid 2px; }
+.clicked-code-section { border: 2px solid rgb(59, 130, 246); }
