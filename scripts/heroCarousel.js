@@ -12,33 +12,46 @@ document.addEventListener("DOMContentLoaded", () => {
   let currentIndex = 0;
   const totalItems = items.length;
 
+  var AUTO_DELAY = 4500;
+  let autoTimer = null;
+
   function updateCarousel(index) {
     carousel.style.transform = `translateX(-${index * 100}%)`;
 
     if (indicatorsContainer) {
       [...indicatorsContainer.children].forEach((dot, i) => {
         dot.style.backgroundColor =
-          i === index
-            ? "var(--primary-color)"
-            : "#C9CECD";
+          i === index ? "var(--primary-color)" : "#C9CECD";
       });
     }
   }
 
-  function goNext() {
+  function goNext(delay=4500) {
+    AUTO_DELAY = delay;
     currentIndex = (currentIndex + 1) % totalItems;
     updateCarousel(currentIndex);
+    resetAuto();
   }
 
-  function goPrev() {
-    currentIndex =
-      (currentIndex - 1 + totalItems) % totalItems;
+  function goPrev(delay=4500) {
+    AUTO_DELAY = delay;
+    currentIndex = (currentIndex - 1 + totalItems) % totalItems;
     updateCarousel(currentIndex);
+    resetAuto();
+  }
+
+  function startAuto() {
+    autoTimer = setInterval(goNext, AUTO_DELAY);
+  }
+
+  function resetAuto() {
+    clearInterval(autoTimer);
+    startAuto();
   }
 
   // Button controls
-  btnNext?.addEventListener("click", goNext);
-  btnPrev?.addEventListener("click", goPrev);
+  btnNext?.addEventListener("click", () => goNext(9000));
+  btnPrev?.addEventListener("click", () => goPrev(9000));
 
   // Indicator controls
   if (indicatorsContainer) {
@@ -46,11 +59,12 @@ document.addEventListener("DOMContentLoaded", () => {
       dot.addEventListener("click", () => {
         currentIndex = index;
         updateCarousel(currentIndex);
+        resetAuto();
       });
     });
   }
 
-  // Optional: swipe support for touch devices
+  // Swipe support
   let startX = 0;
 
   carousel.addEventListener("touchstart", (e) => {
@@ -65,4 +79,7 @@ document.addEventListener("DOMContentLoaded", () => {
       diff > 0 ? goNext() : goPrev();
     }
   });
+
+  // Start autoplay
+  startAuto();
 });
