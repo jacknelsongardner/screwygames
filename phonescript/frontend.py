@@ -1,9 +1,12 @@
+import customtkinter as ctk
 import tkinter as tk
-from tkinter import ttk, messagebox
 import json
 import sheets
 import imessage
 import os
+
+ctk.set_appearance_mode("System")
+ctk.set_default_color_theme("blue")
 
 FILTER_FILE = "filters.json"
 
@@ -28,11 +31,11 @@ selected_words = {}
 
 # ---------------- MAIN APP ---------------- #
 
-class App(tk.Tk):
+class App(ctk.CTk):
     def __init__(self):
         super().__init__()
         self.title("Mass Text Messenger")
-        self.geometry("800x650")
+        self.geometry("900x700")
 
         self.current_sheet_id = None
         self.current_sheet_name = tk.StringVar(value="Current file: None")
@@ -40,34 +43,39 @@ class App(tk.Tk):
         self.build_ui()
 
     def build_ui(self):
-        top = ttk.Frame(self)
-        top.pack(fill="x", padx=10, pady=5)
+        # ---------- Top Bar ----------
+        top = ctk.CTkFrame(self)
+        top.pack(fill="x", padx=15, pady=10)
 
-        ttk.Label(top, text="Phone column:").pack(side="left")
-        self.phone_column = ttk.Entry(top, width=20)
+        ctk.CTkLabel(top, text="Phone column:").pack(side="left")
+        self.phone_column = ctk.CTkEntry(top, width=180)
         self.phone_column.insert(0, "Phone number")
-        self.phone_column.pack(side="left", padx=5)
+        self.phone_column.pack(side="left", padx=8)
 
-        ttk.Button(top, text="Import Sheet", command=self.open_import_sheet).pack(side="left", padx=5)
-        ttk.Button(top, text="Set Filters", command=self.send_message).pack(side="left", padx=5)
+        ctk.CTkButton(top, text="Import Sheet", command=self.open_import_sheet).pack(side="left", padx=5)
+        ctk.CTkButton(top, text="Manage Filters", command=self.open_manage_filters).pack(side="left", padx=5)
+        ctk.CTkButton(top, text="Send Message", command=self.send_message).pack(side="right")
 
+        # ---------- Current Sheet ----------
+        ctk.CTkLabel(
+            self,
+            textvariable=self.current_sheet_name,
+            text_color="gray"
+        ).pack(anchor="w", padx=20)
 
-        ttk.Label(self, textvariable=self.current_sheet_name, foreground="gray")\
-            .pack(anchor="w", padx=10)
+        # ---------- Message ----------
+        ctk.CTkLabel(self, text="Message").pack(anchor="w", padx=20, pady=(15, 0))
+        self.message = ctk.CTkTextbox(self, height=120)
+        self.message.pack(fill="x", padx=20)
 
-        ttk.Label(self, text="Message:").pack(anchor="w", padx=10, pady=(10, 0))
-        self.message = tk.Text(self, height=6)
-        self.message.pack(fill="x", padx=10)
-        
-        ttk.Button(top, text="Send Message", command=self.send_message).pack(side="left", padx=5)
-
-        ttk.Label(self, text="Filters:").pack(anchor="w", padx=10, pady=(10, 0))
-        self.filter_container = ttk.Frame(self)
-        self.filter_container.pack(fill="both", expand=True, padx=10)
+        # ---------- Filters ----------
+        ctk.CTkLabel(self, text="Filters").pack(anchor="w", padx=20, pady=(15, 0))
+        self.filter_container = ctk.CTkScrollableFrame(self)
+        self.filter_container.pack(fill="both", expand=True, padx=20, pady=(0, 15))
 
         self.refresh_filters()
 
-    # -------- FILTER UI -------- #
+    # ---------- FILTER UI ----------
 
     def refresh_filters(self):
         for w in self.filter_container.winfo_children():
@@ -79,77 +87,76 @@ class App(tk.Tk):
         sheet_filters = filters.get(self.current_sheet_id, {})
 
         for column, words in sheet_filters.items():
-            frame = ttk.LabelFrame(self.filter_container, text=column)
-            frame.pack(fill="x", pady=5)
+            frame = ctk.CTkFrame(self.filter_container)
+            frame.pack(fill="x", pady=6)
 
-            selected_words.setdefault(column, set())
+            ctk.CTkLabel(frame, text=column, font=ctk.CTkFont(weight="bold")).pack(anchor="w", padx=10, pady=(5, 0))
+
+            selected_words.setdefault(column.lower(), set())
+
+            word_row = ctk.CTkFrame(frame)
+            word_row.pack(fill="x", padx=10, pady=5)
 
             for word in words:
-                var = tk.BooleanVar(value=word in selected_words[column])
-                ttk.Checkbutton(
-                    frame,
+                var = tk.BooleanVar(value=word in selected_words[column.lower()])
+                cb = ctk.CTkCheckBox(
+                    word_row,
                     text=word,
                     variable=var,
                     command=lambda c=column, w=word, v=var: self.toggle_word(c, w, v)
-                ).pack(side="left", padx=5, pady=5)
+                )
+                cb.pack(side="left", padx=6)
 
     def toggle_word(self, column, word, var):
+        key = column.lower()
         if var.get():
-            selected_words[column.lower()].add(word.strip().lower())
+            selected_words.setdefault(key, set()).add(word.lower())
         else:
-            selected_words[column.lower()].discard(word.strip().lower())
+            selected_words.setdefault(key, set()).discard(word.lower())
 
-    # -------- WINDOWS -------- #
+    # ---------- ACTIONS ----------
 
     def open_import_sheet(self):
         ImportSheetWindow(self)
-    
-    def send_message(self):
-        print("sending message")
-        print("selected words:")
-        print(selected_words)
-
-        auth = sheets.authenticate()
-        contacts = sheets.download_sheet_as_csv(auth, self.current_sheet_id, "sheet.csv").lower()
-        print("downloaded contacts:")
-        print(contacts)
-        contacts = sheets.filter_csv(contacts, selected_words)
-        print("filtered contacts:")
-        print(contacts)
-
-        imessage.send_messages(self.message.get("1.0", "end-1c"), contacts)
 
     def open_manage_filters(self):
+        if not self.current_sheet_id:
+            return
         ManageFiltersWindow(self)
 
+    def send_message(self):
+        auth = sheets.authenticate()
+        contacts = sheets.download_sheet_as_csv(auth, self.current_sheet_id, "sheet.csv").lower()
+        contacts = sheets.filter_csv(contacts, selected_words)
+        imessage.send_messages(self.message.get("1.0", "end-1c"), contacts)
 
 
 # ---------------- IMPORT SHEET WINDOW ---------------- #
 
-class ImportSheetWindow(tk.Toplevel):
+class ImportSheetWindow(ctk.CTkToplevel):
     def __init__(self, parent):
         super().__init__(parent)
         self.parent = parent
-
         self.title("Select Sheet")
-        self.geometry("400x300")
+        self.geometry("450x350")
         self.grab_set()
 
         self.auth = sheets.authenticate()
         self.sheets = sheets.list_spreadsheets(self.auth) if self.auth else {}
 
-        ttk.Label(self, text="Select a sheet:").pack(anchor="w", padx=10)
+        ctk.CTkLabel(self, text="Select a sheet").pack(anchor="w", padx=15, pady=10)
+
         self.listbox = tk.Listbox(self)
-        self.listbox.pack(fill="both", expand=True, padx=10, pady=5)
+        self.listbox.pack(fill="both", expand=True, padx=15)
 
         for name in self.sheets:
             self.listbox.insert("end", name)
 
-        btns = ttk.Frame(self)
-        btns.pack(fill="x", padx=10, pady=10)
+        btns = ctk.CTkFrame(self)
+        btns.pack(fill="x", padx=15, pady=10)
 
-        ttk.Button(btns, text="Cancel", command=self.destroy).pack(side="right")
-        ttk.Button(btns, text="Confirm", command=self.confirm).pack(side="right", padx=5)
+        ctk.CTkButton(btns, text="Cancel", command=self.destroy).pack(side="right")
+        ctk.CTkButton(btns, text="Confirm", command=self.confirm).pack(side="right", padx=8)
 
     def confirm(self):
         sel = self.listbox.curselection()
@@ -169,49 +176,52 @@ class ImportSheetWindow(tk.Toplevel):
         self.destroy()
 
 
-class ManageFiltersWindow(tk.Toplevel):
+# ---------------- MANAGE FILTERS ---------------- #
+
+class ManageFiltersWindow(ctk.CTkToplevel):
     def __init__(self, parent):
         super().__init__(parent)
         self.parent = parent
         self.sheet_id = parent.current_sheet_id
-
         self.title("Manage Filters")
-        self.geometry("600x400")
+        self.geometry("700x450")
         self.grab_set()
 
         self.selected_column = tk.StringVar()
         self.build_ui()
 
     def build_ui(self):
-        main = ttk.Frame(self)
-        main.pack(fill="both", expand=True, padx=10, pady=10)
+        main = ctk.CTkFrame(self)
+        main.pack(fill="both", expand=True, padx=15, pady=15)
 
-        left = ttk.Frame(main)
+        # ---------- Left ----------
+        left = ctk.CTkFrame(main, width=200)
         left.pack(side="left", fill="y")
 
-        ttk.Label(left, text="Columns").pack(anchor="w")
+        ctk.CTkLabel(left, text="Columns").pack(pady=5)
         self.column_list = tk.Listbox(left)
-        self.column_list.pack(fill="y")
+        self.column_list.pack(fill="y", expand=True, padx=5)
         self.column_list.bind("<<ListboxSelect>>", self.select_column)
 
         for col in filters[self.sheet_id]:
             self.column_list.insert("end", col)
 
-        ttk.Button(left, text="Add Column", command=self.add_column).pack(fill="x", pady=2)
-        ttk.Button(left, text="Delete Column", command=self.delete_column).pack(fill="x", pady=2)
+        ctk.CTkButton(left, text="Add Column", command=self.add_column).pack(fill="x", pady=4)
+        ctk.CTkButton(left, text="Delete Column", command=self.delete_column).pack(fill="x", pady=4)
 
-        right = ttk.Frame(main)
-        right.pack(side="left", fill="both", expand=True, padx=10)
+        # ---------- Right ----------
+        right = ctk.CTkFrame(main)
+        right.pack(side="left", fill="both", expand=True, padx=15)
 
-        ttk.Label(right, text="Words").pack(anchor="w")
+        ctk.CTkLabel(right, text="Words").pack(anchor="w")
         self.word_list = tk.Listbox(right)
         self.word_list.pack(fill="both", expand=True)
 
-        self.word_entry = ttk.Entry(right)
-        self.word_entry.pack(fill="x", pady=5)
+        self.word_entry = ctk.CTkEntry(right)
+        self.word_entry.pack(fill="x", pady=8)
 
-        ttk.Button(right, text="Add Word", command=self.add_word).pack(fill="x")
-        ttk.Button(right, text="Delete Word", command=self.delete_word).pack(fill="x")
+        ctk.CTkButton(right, text="Add Word", command=self.add_word).pack(fill="x")
+        ctk.CTkButton(right, text="Delete Word", command=self.delete_word).pack(fill="x", pady=5)
 
     def select_column(self, _):
         sel = self.column_list.curselection()
@@ -229,7 +239,6 @@ class ManageFiltersWindow(tk.Toplevel):
         name = simple_input(self, "New Column", "Column name:")
         if not name:
             return
-
         filters[self.sheet_id][name] = []
         self.column_list.insert("end", name)
         save_filters(filters)
@@ -238,14 +247,11 @@ class ManageFiltersWindow(tk.Toplevel):
         col = self.selected_column.get()
         if not col:
             return
-
         del filters[self.sheet_id][col]
         save_filters(filters)
-
         self.column_list.delete(0, "end")
         for c in filters[self.sheet_id]:
             self.column_list.insert("end", c)
-
         self.word_list.delete(0, "end")
 
     def add_word(self):
@@ -253,7 +259,6 @@ class ManageFiltersWindow(tk.Toplevel):
         word = self.word_entry.get().strip()
         if not col or not word:
             return
-
         filters[self.sheet_id][col].append(word)
         self.word_list.insert("end", word)
         self.word_entry.delete(0, "end")
@@ -264,7 +269,6 @@ class ManageFiltersWindow(tk.Toplevel):
         sel = self.word_list.curselection()
         if not col or not sel:
             return
-
         word = self.word_list.get(sel[0])
         filters[self.sheet_id][col].remove(word)
         self.word_list.delete(sel[0])
@@ -274,14 +278,14 @@ class ManageFiltersWindow(tk.Toplevel):
 # ---------------- SIMPLE INPUT ---------------- #
 
 def simple_input(parent, title, prompt):
-    win = tk.Toplevel(parent)
+    win = ctk.CTkToplevel(parent)
     win.title(title)
-    win.geometry("300x120")
+    win.geometry("320x140")
     win.grab_set()
 
-    ttk.Label(win, text=prompt).pack(pady=5)
-    entry = ttk.Entry(win)
-    entry.pack(fill="x", padx=10)
+    ctk.CTkLabel(win, text=prompt).pack(pady=10)
+    entry = ctk.CTkEntry(win)
+    entry.pack(fill="x", padx=20)
 
     value = {"v": None}
 
@@ -289,9 +293,9 @@ def simple_input(parent, title, prompt):
         value["v"] = entry.get()
         win.destroy()
 
-    ttk.Button(win, text="OK", command=ok).pack(pady=10)
-    
+    ctk.CTkButton(win, text="OK", command=ok).pack(pady=10)
     return value["v"]
+
 
 # ---------------- RUN ---------------- #
 
