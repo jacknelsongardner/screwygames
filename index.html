@@ -105,6 +105,44 @@
   border: #3B82F6 solid 2px;
 }
 </style>
+
+<style>
+  /* Fixed navbar - always follows scroll */
+  #global-header header {
+    position: fixed !important;
+    left: 0;
+    right: 0;
+    top: 0 !important;
+    width: 100%;
+  }
+
+  /* Push hero section down so content isn't hidden under fixed navbar */
+  #saiex85 {
+    padding-top: 7rem; /* matches h-28 desktop navbar */
+  }
+
+  /* Responsive navbar: smaller on mobile */
+  @media (max-width: 1023px) {
+    #saiex85 {
+      padding-top: 4rem; /* matches h-16 mobile navbar */
+    }
+  }
+
+  /* Countdown digits: responsive font size */
+  #countdown-days,
+  #countdown-hours,
+  #countdown-minutes,
+  #countdown-seconds {
+    font-size: clamp(1.25rem, 5vw, 3rem) !important;
+  }
+
+  /* Video wrapper: always fills available width */
+  #smwkr8c .relative > .border-2 {
+    width: 100%;
+    max-width: 100%;
+  }
+</style>
+
     
 
 <script src="/scripts/heroCarousel.js" defer></script>
@@ -124,11 +162,11 @@
       </div>
     <div class="frame-content-wrapper"><div class="frame-content"><div class="[font-family:var(--font-family-body)]"><div id="global-header"><header id="global-header" class="code-section bg-black shadow-xl sticky top-0 z-50 border-b-2 border-[var(--primary-color)]" style="background-color: rgb(0, 0, 0);">
   <nav class="container mx-auto px-4">
-  <div class="flex items-center justify-between h-28">
+  <div class="flex items-center justify-between h-16 lg:h-28">
 
     <!-- Logo -->
     <a href="/" class="flex-shrink-0">
-      <img src="./assets/image_0.png" alt="Screwy Games Logo" class="h-28 py-2">
+      <img src="./assets/image_0.png" alt="Screwy Games Logo" class="h-10 lg:h-28 py-1 lg:py-2">
     </a>
 
     <!-- Desktop Navigation -->
@@ -278,6 +316,8 @@
             </div>
           </div>
 
+          
+
                 <div
                     style="
                     background-image: linear-gradient(to right bottom, rgb(15, 52, 96), rgb(22, 33, 62));
@@ -299,7 +339,7 @@
                   style="
                     display: grid;
                     grid-template-columns: repeat(4, 1fr);
-                    gap: 2rem;
+                    gap: clamp(0.5rem, 3vw, 2rem);
                     text-align: center;
                   "
                   >
