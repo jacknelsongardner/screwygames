@@ -116,14 +116,16 @@
     width: 100%;
   }
 
-  /* Push hero section down so content isn't hidden under fixed navbar */
-  #saiex85 {
+  /* Push hero section down so content isn't hidden under fixed navbar.
+     Applied to the section itself (not the #saiex85 wrapper) so the hero's
+     own background fills the gap instead of showing the white body background. */
+  #saiex85 #hero {
     padding-top: 7rem; /* matches h-28 desktop navbar */
   }
 
   /* Responsive navbar: smaller on mobile */
   @media (max-width: 1023px) {
-    #saiex85 {
+    #saiex85 #hero {
       padding-top: 4rem; /* matches h-16 mobile navbar */
     }
   }
@@ -242,19 +244,27 @@
             <span class="text-sm font-[var(--font-family-body)] font-semibold text-[var(--accent-color)] uppercase tracking-wide">NOW LIVE</span>
           </div>
           <h3 class="text-4xl font-[var(--font-family-heading)] font-bold mb-4">
-            Demoing Soon at Dragon Flight August 21-23!
+            Demoing Soon at PAX West September 4-7!
           </h3>
           <div class="space-y-4 mb-6">
-            <div class="flex items-center gap-3">
-              <i class="fas fa-map-marker-alt text-[var(--accent-color)] text-xl" aria-hidden="true"></i>
-              <p class="font-[var(--font-family-body)] text-lg">
-                📌 300 112th Avenue SE, Bellevue, Washington 98004
-              </p>
+            <div class="flex flex-col gap-3">
+              <div class="flex items-center gap-3">
+                <i class="fas fa-map-marker-alt text-[var(--accent-color)] text-xl" aria-hidden="true"></i>
+                <p class="font-[var(--font-family-body)] text-lg">
+                  Arch Building 705 Pike Street Seattle, WA 98101
+                </p>
+              </div>
+              <div class="flex items-center gap-3">
+                <i class="fas fa-map-marker-alt text-[var(--accent-color)] text-xl" aria-hidden="true"></i>
+                <p class="font-[var(--font-family-body)] text-lg">
+                  Summit Building 900 Pine Street Seattle, WA 98101
+                </p>
+              </div>
             </div>
             <div class="flex items-center gap-3">
               <i class="fas fa-clock text-[var(--accent2-color)] text-xl" aria-hidden="true"></i>
               <p class="font-[var(--font-family-body)] text-lg">
-                Visit my booth and play!
+                Visit my table in the Playtest NW section!
               </p>
             </div>
           </div>
