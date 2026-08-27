@@ -246,29 +246,43 @@
           <h3 class="text-4xl font-[var(--font-family-heading)] font-bold mb-4">
             Demoing Soon at PAX West September 4-7!
           </h3>
-          <div class="space-y-4 mb-6">
-            <div class="flex flex-col gap-3">
-              <div class="flex items-center gap-3">
-                <i class="fas fa-map-marker-alt text-[var(--accent-color)] text-xl" aria-hidden="true"></i>
-                <p class="font-[var(--font-family-body)] text-lg">
-                  Arch Building 705 Pike Street Seattle, WA 98101
-                </p>
+          <div class="mb-6">
+            <div class="flex flex-col lg:flex-row items-start justify-between gap-6">
+              <div class="flex flex-col gap-3 max-w-[65%]">
+                <div class="flex items-center gap-3">
+                  <i class="fas fa-map-marker-alt text-[var(--accent-color)] text-xl" aria-hidden="true"></i>
+                  <p class="font-[var(--font-family-body)] text-lg">
+                    Arch Building 705 Pike Street Seattle, WA 98101
+                  </p>
+                </div>
+                <div class="flex items-center gap-3">
+                  <i class="fas fa-map-marker-alt text-[var(--accent-color)] text-xl" aria-hidden="true"></i>
+                  <p class="font-[var(--font-family-body)] text-lg">
+                    Summit Building 900 Pine Street Seattle, WA 98101
+                  </p>
+                </div>
+                <div class="flex items-center gap-3 mt-2">
+                  <i class="fas fa-clock text-[var(--accent2-color)] text-xl" aria-hidden="true"></i>
+                  <p class="font-[var(--font-family-body)] text-lg">
+                    Visit my table in the Playtest NW section!
+                  </p>
+                </div>
               </div>
-              <div class="flex items-center gap-3">
-                <i class="fas fa-map-marker-alt text-[var(--accent-color)] text-xl" aria-hidden="true"></i>
-                <p class="font-[var(--font-family-body)] text-lg">
-                  Summit Building 900 Pine Street Seattle, WA 98101
-                </p>
+
+              <div class="flex flex-col gap-3 items-end">
+                <button type="button" class="rounded border border-blue-800 bg-blue-500 px-1 py-2 text-xs text-white sm:px-4 sm:text-base flex items-center justify-center gap-2" style="background-color: rgb(59, 130, 246);">
+                  <i class="fas fa-calendar-plus" aria-hidden="true"></i>
+                  <span>Save Date</span>
+                </button>
+                <button type="button" class="rounded border border-blue-800 bg-blue-500 px-1 py-2 text-xs text-white sm:px-4 sm:text-base flex items-center justify-center gap-2" style="background-color: rgb(59, 130, 246);">
+                  <i class="fas fa-directions" aria-hidden="true"></i>
+                  <span>Get Directions</span>
+                </button>
               </div>
-            </div>
-            <div class="flex items-center gap-3">
-              <i class="fas fa-clock text-[var(--accent2-color)] text-xl" aria-hidden="true"></i>
-              <p class="font-[var(--font-family-body)] text-lg">
-                Visit my table in the Playtest NW section!
-              </p>
             </div>
           </div>
         </div>
+        
       </div>
     </div>
   </div>
@@ -347,66 +361,14 @@
                   
                   <div
                   style="
-                    display: grid;
-                    grid-template-columns: repeat(4, 1fr);
+                    display: flex;
+                    justify-content: center;
                     gap: clamp(0.5rem, 3vw, 2rem);
                     text-align: center;
                   "
                   >
+              <a href="https://www.kickstarter.com/projects/sgbz/barnyard-zombies" class="w-full max-w-2xl inline-block bg-gradient-to-r from-[var(--primary-color)] to-[var(--accent2-color)] text-white px-8 py-4 rounded-full font-[var(--font-family-body)] font-bold text-lg hover:shadow-2xl transition-all transform hover:scale-105 text-center" style="background-image: linear-gradient(to right, rgb(108, 92, 231), rgb(9, 132, 227));">Back the Campaign</a>
 
-                
-                  <div>
-                    <div style="color:white; font-size:0.875rem; margin-bottom:0.5rem; margin-bottom: -10px;">Days</div>
-                    <div id="countdown-days" style="color:rgb(34, 255, 251); font-size:3rem; font-family: 'Orbitron', sans-serif;">--</div>
-                  </div>
-
-                  <div>
-                    <div style="color:white; font-size:0.875rem; margin-bottom:0.5rem; margin-bottom: -10px;">Hours</div>
-                    <div id="countdown-hours" style="color:rgb(34, 255, 251); font-size:3rem; font-family: 'Orbitron', sans-serif;">--</div>
-                  </div>
-
-                  <div>
-                    <div style="color:white; font-size:0.875rem; margin-bottom:0.5rem; margin-bottom: -10px;">Minutes</div>
-                    <div id="countdown-minutes" style="color:rgb(34, 255, 251); font-size:3rem; font-family: 'Orbitron', sans-serif;">--</div>
-                  </div>
-
-                  <div>
-                    <div style="color:white; font-size:0.875rem; margin-bottom:0.5rem; margin-bottom: -10px;">Seconds</div>
-                    <div id="countdown-seconds" style="color:rgb(34, 255, 251); font-size:3rem; font-family: 'Orbitron', sans-serif;">--</div>
-                  </div>
-
-                  <script>
-                    // Target date: August 7, 2026 (local time)
-                    const targetDate = new Date("August 21, 2026 00:00:00").getTime();
-
-                    function updateCountdown() {
-                      const now = new Date().getTime();
-                      const diff = targetDate - now;
-
-                      if (diff <= 0) {
-                        document.getElementById("countdown-days").textContent = "0";
-                        document.getElementById("countdown-hours").textContent = "0";
-                        document.getElementById("countdown-minutes").textContent = "0";
-                        document.getElementById("countdown-seconds").textContent = "0";
-                        clearInterval(timer);
-                        return;
-                      }
-
-                      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-                      const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
-                      const minutes = Math.floor((diff / (1000 * 60)) % 60);
-                      const seconds = Math.floor((diff / 1000) % 60);
-
-                      document.getElementById("countdown-days").textContent = days;
-                      document.getElementById("countdown-hours").textContent = hours.toString().padStart(2, "0");
-                      document.getElementById("countdown-minutes").textContent = minutes.toString().padStart(2, "0");
-                      document.getElementById("countdown-seconds").textContent = seconds.toString().padStart(2, "0");
-                    }
-
-                    // Initial call + update every second
-                    updateCountdown();
-                    const timer = setInterval(updateCountdown, 1000);
-                  </script>
                 </div>
               </div>
 
